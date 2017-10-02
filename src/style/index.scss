@@ -1,0 +1,40 @@
+html, body {
+	background: #EEE;
+	color: #444;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+form {
+	background: #fff;
+	padding: 10px;
+}
+
+a {
+	text-decoration: none;
+	color: rgb(103,58,183);
+}
+
+.mdl-card {
+	width: 45%;
+	margin: auto;
+	transition: all .3s;
+	transform: translateY(100px);
+}
+
+.mdl-card h3 {
+	padding-left: 35px;
+}
+
+.error {
+	transform: translateY(250px);
+
+	b {
+		color: #C62828;
+	}
+}
+
+footer {
+	text-align: center;
+	margin-top: 200px;
+}
