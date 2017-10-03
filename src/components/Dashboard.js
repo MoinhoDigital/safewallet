@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import bindActions from '../util';
 import reducers from '../reducers';
-import { addTodo, removeTodo } from '../actions/todo';
+// import { addTodo, removeTodo } from '../actions/todo';
 import Assets from './Assets';
 import Transactions from './Transactions';
 
@@ -56,21 +56,22 @@ const transactions = [
 	}
 ];
 
-@connect(reducers, bindActions({ addTodo, removeTodo }))
+// @connect(reducers, bindActions({ addTodo, removeTodo }))
 export default class Dashboard extends Component {
-	addTodos = e => {
-		e.preventDefault();
+	// addTodos = e => {
+	// 	e.preventDefault();
 
-		let { text } = this.state;
-		this.setState({ text: '' });
-		this.props.addTodo(text);
-	};
+	// 	let { text } = this.state;
+	// 	this.setState({ text: '' });
+	// 	this.props.addTodo(text);
+	// };
 
-	removeTodo = (todo) => {
-		this.props.removeTodo(todo);
-	};
+	// removeTodo = (todo) => {
+	// 	this.props.removeTodo(todo);
+	// };
 
-	render({ todos }, { text }) {
+	render() {
+		console.log(this.props);
 		return (
 			<Container>
 				<Card>

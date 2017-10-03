@@ -9,6 +9,7 @@ import 'material-design-lite/material';
 
 import { Layout } from 'preact-mdl';
 
+import Authorization from './components/Authorization';
 import Dashboard from './components/Dashboard';
 import ErrorPage from './components/404';
 
@@ -21,7 +22,7 @@ const Header = () => (
 	<Layout.Header>
 		<Layout.HeaderRow>
 			<Layout.Title>
-				<img src={Logo} />
+				{/* <img src={Logo} /> */}
 				<a href="/" style={{ color: 'white' }}>SAFE Wallet</a>
 			</Layout.Title>
 			<Layout.Spacer />
@@ -34,7 +35,8 @@ render(
 		<Layout fixed-header>
 			<Header />
 			<Router>
-				<Dashboard path='/' />
+				<Authorization path='/' />
+				<Dashboard path='/dashboard' />
 				<ErrorPage default />
 			</Router>
 		</Layout>
