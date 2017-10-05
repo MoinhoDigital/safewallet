@@ -1,4 +1,4 @@
-import { APP_INITIALIZE, APP_SESSION  } from '../actions';
+import { APP_INITIALIZE, APP_AUTHORIZE  } from '../actions';
 
 export default function(state = {}, action) {
   const { type, payload } = action;
@@ -10,8 +10,10 @@ export default function(state = {}, action) {
         authorizing: true,
         appHandle: payload
       }};
-    case APP_SESSION:
-      return {...state, ...payload};
+    case APP_AUTHORIZE:
+      return {...state,
+        authUri: action.payload
+      };
     default:
       return state;
     }

@@ -16,6 +16,7 @@ export function startInitializeApp() {
 }
 
 function completeAuthorizeApp(authUri) {
+	console.log('Authorized', authUri);
 	return {
 		type: APP_AUTHORIZE,
 		payload: authUri
@@ -23,6 +24,7 @@ function completeAuthorizeApp(authUri) {
 }
 
 export function startAuthorizeApp(appHandle) {
+	console.log('Start authorize', appHandle);
 	return dispatch => {
 		return authorizeApp(appHandle)
 		.then(res => dispatch(completeAuthorizeApp(res)));

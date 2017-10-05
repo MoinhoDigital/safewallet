@@ -11,12 +11,15 @@ export default class Authorization extends Component {
 	render() {
 		const { startInitializeApp, startAuthorizeApp, authorizations: { initializing, appHandle, authorizing, authUri  } } = this.props;
 		if(appHandle && authorizing) {
+			console.log('Authorizing', appHandle);
 			startAuthorizeApp(appHandle);
 		}
 		if (authUri) {
+			console.log('authURI:', authUri);
 			route(`/dashboard`, true);
 		}
 		if(initializing) {
+			console.log('Start the app');
 			startInitializeApp();
 		}
 		if(!initializing && !appHandle) {
