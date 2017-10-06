@@ -1,8 +1,16 @@
 import { CREATE_WALLET } from './';
+import { setupAccount } from '../utils/safeApp';
 
-export function createWallet(text) {
+function completeCreateWallet(text) {
 	return {
 		type: CREATE_WALLET,
-		text
+		payload: text
+	};
+}
+
+export function createWallet(app, text) {
+	return dispatch => {
+		setupAccount(app, text)
+			.then(res => dispatch(completeCreateWallet(res)));
 	};
 }

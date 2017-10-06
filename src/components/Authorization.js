@@ -11,20 +11,18 @@ export default class Authorization extends Component {
 	render() {
 		const { startInitializeApp, startAuthorizeApp, authorizations: { initializing, appHandle, authorizing, authUri  } } = this.props;
 		if(appHandle && authorizing && !authUri ) {
-			
 			console.log('Authorizing', appHandle);
 			startAuthorizeApp(appHandle);
 		}
 		if (authUri) {
 			console.log('authURI:', authUri);
-			route(`/dashboard`, true);
+			route(`/create_wallet`, true);
 		}
 		if(initializing) {
-			console.log('Start the app');
 			startInitializeApp();
 		}
 		if(!initializing && !appHandle) {
-			return <h2 onClick={() => route('/dashboard', true)}>Connection Failed.</h2>;
+			return <h2>Connection Failed.</h2>;
 		}
 		return (
 			<h2>Waiting for authorization</h2>

@@ -2,7 +2,6 @@ import { APP_INITIALIZE, APP_AUTHORIZE  } from '../actions';
 
 export default function(state = {}, action) {
   const { type, payload } = action;
-
   switch (type) {
     case APP_INITIALIZE:
       return {...state, ...{
@@ -12,7 +11,9 @@ export default function(state = {}, action) {
       }};
     case APP_AUTHORIZE:
       return {...state,
-        authUri: action.payload
+        authorizing: false,
+        appHandle: payload.appHandle,
+        authUri: payload.authUri
       };
     default:
       return state;

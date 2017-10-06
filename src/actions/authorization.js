@@ -15,18 +15,17 @@ export function startInitializeApp() {
 	};
 }
 
-function completeAuthorizeApp(authUri) {
-	console.log('Authorized', authUri);
+function completeAuthorizeApp(payload) {
+	console.log('Authorized', payload);
 	return {
 		type: APP_AUTHORIZE,
-		payload: authUri
+		payload
 	};
 }
 
 export function startAuthorizeApp(appHandle) {
-	console.log('Start authorize', appHandle);
 	return dispatch => {
 		return authorizeApp(appHandle)
-		.then(res => dispatch(completeAuthorizeApp(res)));
+		.then((res) => dispatch(completeAuthorizeApp(res)));
 	};
 }
