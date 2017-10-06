@@ -1,7 +1,8 @@
 import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
-import { Grid, Card, Layout } from 'preact-mdl';
+import { Grid, Card, Layout, Button } from 'preact-mdl';
 import styled from 'styled-components';
+import { route } from 'preact-router';
 
 import bindActions from '../util';
 import reducers from '../reducers';
@@ -74,12 +75,14 @@ export default class Dashboard extends Component {
 		console.log(this.props);
 		return (
 			<Container>
+				<h4 onClick={() => route('/create_wallet', true)}>Create Account</h4>
 				<Card>
 					<Transactions transactions={transactions} />
 				</Card>
 				<Card>
 					<Assets assets={assets} />
 				</Card>
+
 			</Container>
 		);
 	}

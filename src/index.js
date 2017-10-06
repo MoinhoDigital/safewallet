@@ -11,6 +11,7 @@ import { Layout } from 'preact-mdl';
 
 import Authorization from './components/Authorization';
 import Dashboard from './components/Dashboard';
+import CreateWallet from './components/CreateWallet';
 import ErrorPage from './components/404';
 
 import store from './store';
@@ -37,6 +38,7 @@ render(
 			<Router>
 				<Authorization path='/' />
 				<Dashboard path='/dashboard' />
+				<CreateWallet path='/create_wallet' />
 				<ErrorPage default />
 			</Router>
 		</Layout>

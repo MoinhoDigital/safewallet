@@ -10,7 +10,8 @@ import { startInitializeApp, startAuthorizeApp } from '../actions/authorization'
 export default class Authorization extends Component {
 	render() {
 		const { startInitializeApp, startAuthorizeApp, authorizations: { initializing, appHandle, authorizing, authUri  } } = this.props;
-		if(appHandle && authorizing) {
+		if(appHandle && authorizing && !authUri ) {
+			
 			console.log('Authorizing', appHandle);
 			startAuthorizeApp(appHandle);
 		}
