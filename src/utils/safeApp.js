@@ -61,6 +61,8 @@ const genServiceInfo = (app, emailId) => {
 export const setupAccount = async function (app, publicId) {
     console.log('setting up with: ', app, publicId);
     // Check if app has persmission to access _publicNames to Read
+    const test = await window.safeApp.authoriseContainer(app, { _publicNames: ['Read'] });
+    console.log('test: ', test);
     const hasPermission = await window.safeApp.canAccessContainer(app, '_publicNames', ['Read']);
     // If we have permission...
     console.log('persmission', hasPermission);
