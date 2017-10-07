@@ -9,10 +9,7 @@ import 'material-design-lite/material';
 
 import { Layout } from 'preact-mdl';
 
-import Authorization from './components/Authorization';
-import Dashboard from './components/Dashboard';
-import CreateWallet from './components/CreateWallet';
-import ErrorPage from './components/404';
+import Routes from './routes';
 
 import store from './store';
 
@@ -35,11 +32,6 @@ render(
 	<Provider store={store}>
 		<Layout fixed-header>
 			<Header />
-			<Router>
-				<Authorization path='/' />
-				<Dashboard path='/dashboard' />
-				<CreateWallet path='/create_wallet' />
-				<ErrorPage default />
-			</Router>
+			<Routes />
 		</Layout>
 	</Provider>, document.body);

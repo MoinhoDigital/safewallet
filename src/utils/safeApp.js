@@ -6,7 +6,7 @@ export const initialiseApp = async function (appId, appName, appVendor) {
         return false;
     }
 	const appInfo = {
-		id: appId || 'net.safe.app.webclient.10',
+		id: appId || 'net.maidsafe.test.safewallet.example1',
 		name: appName || 'Safe App',
 		vendor: appVendor || 'Anonymous',
 		scope: null
@@ -58,17 +58,15 @@ const genServiceInfo = (app, emailId) => {
   };
   
 
-export const setupAccount = async function (app, publicId) {
-    console.log('setting up with: ', app, publicId);
+export const setupAccount = async function (appHandle, publicId) {
+    console.log('setting up with: ', appHandle, publicId);
     // Check if app has persmission to access _publicNames to Read
-    const test = await window.safeApp.authoriseContainer(app, { _publicNames: ['Read'] });
-    console.log('test: ', test);
-    const hasPermission = await window.safeApp.canAccessContainer(app, '_publicNames', ['Read']);
+    const hasPermission = await window.safeApp.canAccessContainer(appHandle, '_publicNames', ['Read']);
     // If we have permission...
     console.log('persmission', hasPermission);
     if(hasPermission) {
         // Get publicNames container
-        const container = await window.safeApp.getContainer(app, '_publicNames');
+        const container = await window.safeApp.getContainer(appHandle, '_publicNames');
         console.log('Container obj: ', container);
         // Get user publicId
         const encPubId = await container.encryptKey(publicId);
@@ -77,10 +75,10 @@ export const setupAccount = async function (app, publicId) {
         try {
             const xorName = await container.decrypt(publicName.buf);
             console.log('Xor', xorName);
-            const appSignKey = await app.crypto.getAppPubSignKey();
-            const md = await app.mutableData.newPublic(xorName, 15003);
+            const appSignKey = await appHandle.crypto.getAppPubSignKey();
+            const md = await appHandle.mutableData.newPublic(xorName, 15003);
             const userPermission = await md.getUserPermissions(appSignKey);
-            const keyPair = await genKeyPair(app);
+            const keyPair = await genKeyPair(appHandle);
             // Create Wallet
             const walletMd = createWallet(keyPair.publicKey);
             return walletMd;

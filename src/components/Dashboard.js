@@ -4,7 +4,7 @@ import { Grid, Card, Layout, Button } from 'preact-mdl';
 import styled from 'styled-components';
 import { route } from 'preact-router';
 
-import bindActions from '../util';
+import bindActions from '../bindActions';
 import reducers from '../reducers';
 // import { addTodo, removeTodo } from '../actions/todo';
 import Assets from './Assets';
