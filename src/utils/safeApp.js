@@ -70,6 +70,7 @@ export const setupAccount = async function (appHandle, publicId) {
         console.log('Container obj: ', container);
         // Get user publicId
         const encPubId = await window.safeMutableData.encryptKey(appHandle, publicId);
+        console.log('enc', encPubId);
         const publicName = await container.get(encPubId);
         console.log('Keys', encPubId, publicName);
         try {

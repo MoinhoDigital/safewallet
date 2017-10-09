@@ -4,7 +4,7 @@ import { route } from 'preact-router';
 import { TextField, Card, Layout, Container, Button } from 'preact-mdl';
 import styled from 'styled-components';
 
-import bindActions from '../bindActions';
+import bindActions from '../utils/bindActions';
 import reducers from '../reducers';
 import { createWallet } from '../actions/wallet';
 import Wallet from './Wallet';
@@ -21,18 +21,11 @@ export default class CreateWallet extends Component {
 		// const { appHandle } = this.props;
 		const { text } = this.state;
 		this.setState({ text: '' });
-		console.log('app', app);
 		this.props.createWallet(app, text);
 	};
 
 	render({ wallets, authorizations: { appHandle, authUri } }, { text }) {
-		console.log('this.props', this.props);
-		console.log('App', appHandle);
 		console.log('wallets...', wallets);
-		if(!appHandle || !authUri) {
-			console.log('Not auth', appHandle, authUri);
-			
-		}
 		return (
 			<Container>
 				<Card shadow={2}>

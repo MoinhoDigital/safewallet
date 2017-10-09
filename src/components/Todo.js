@@ -2,7 +2,7 @@ import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
 import { TextField, Card, Layout } from 'preact-mdl';
 
-import bindActions from '../bindActions';
+import bindActions from '../utils/bindActions';
 import reducers from '../reducers';
 import { addTodo, removeTodo } from '../actions/todo';
 import TodoItem from './TodoItem';
