@@ -65,16 +65,15 @@ export const setupAccount = async function (appHandle, publicId) {
     // If we have permission...
     console.log('persmission', hasPermission);
     if(hasPermission) {
-        // Get publicNames container
-        const container = await window.safeApp.getContainer(appHandle, '_publicNames');
-        console.log('Container obj: ', container);
-        // Get user publicId
-        const encPubId = await window.safeMutableData.encryptKey(appHandle, publicId);
-        console.log('enc', encPubId);
-        const publicName = await container.get(encPubId);
-        console.log('Keys', encPubId, publicName);
         try {
-            const xorName = await container.decrypt(publicName.buf);
+            const pubNamesHandle = await window.safeApp.getContainer(appHandle, '_publicNames');
+            console.log('Container obj: ', pubNamesHandle);
+            // Get user publicId
+            const encPubId = await window.safeMutableData.encryptKey(pubNamesHandle, publicId);
+            console.log('enc', encPubId);
+            const publicName = await window.safeMutableData.get(pubNamesHandle, encPubId);
+            console.log('Keys', encPubId, publicName);
+            const xorName = await pubNamesHandle.decrypt(publicName.buf);
             console.log('Xor', xorName);
             const appSignKey = await appHandle.crypto.getAppPubSignKey();
             const md = await appHandle.mutableData.newPublic(xorName, 15003);
