@@ -4,7 +4,7 @@ import { Button } from 'preact-mdl';
 export default({ wallet }) => {
 	return (
 		<li>
-			{ ' ' + wallet.text }
+			{wallet.id}
 		</li>
 	);
 };

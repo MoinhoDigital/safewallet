@@ -5,9 +5,7 @@ export default function(state = [], action) {
 
   switch (type) {
     case CREATE_WALLET:
-      return [...state, {id: Math.random().toString(36).substring(2),
-        text
-      }];
+      return [...state, { ...action.payload }];
     default:
       return state;
     }

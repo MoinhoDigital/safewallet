@@ -25,7 +25,6 @@ export default class CreateWallet extends Component {
 	};
 
 	render({ wallets, authorizations: { appHandle, authUri } }, { text }) {
-		console.log('wallets...', wallets);
 		return (
 			<Container>
 				<Card shadow={2}>

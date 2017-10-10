@@ -1,10 +1,11 @@
 import { CREATE_WALLET } from './';
 import { setupAccount } from '../utils/safeApp';
 
-function completeCreateWallet(text) {
+function completeCreateWallet(account) {
+	console.log('Action completeCreateWallet: ', account);
 	return {
 		type: CREATE_WALLET,
-		payload: text
+		payload: account
 	};
 }
 
