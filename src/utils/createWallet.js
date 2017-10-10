@@ -1,16 +1,18 @@
-export default (app, encPk) => {
+export default async function(appHandle, encPk) {
     let baseWallet = {
-      __wallet_enc_pk: encPk
+      __wallet_enc_pk: encPk.publicKey
     };
-    let walletMd;
-    let permSet;
-  
-    return app.mutableData.newRandomPublic(15003)
-      .then((md) => md.quickSetup(baseWallet))
-      .then((md) => walletMd = md)
-      .then(() => app.mutableData.newPermissionSet())
-      .then((pmSet) => permSet = pmSet)
-      .then(() => permSet.setAllow('Insert'))
-      .then(() => walletMd.setUserPermissions(null, permSet, 1))
-      .then(() => walletMd);
+
+    try {
+      const mdHandle = await window.safeMutableData.newRandomPublic(appHandle, 15003);
+      const walletMd = await window.safeMutableData.quickSetup(mdHandle, baseWallet, 'SafeWallet', 'SafeWallet Data');
+      const permSet = await window.safeMutableData.newPermissionSet(appHandle);
+      await window.safeMutableDataPermissionsSet.setAllow(permSet, 'Insert');
+      await window.safeMutableData.setUserPermissions(mdHandle, null, permSet, 1);
+      return walletMd;
+
+    } catch (err) {
+      console.dir(err);
+      return err;
+    }
   };

@@ -1,5 +1,6 @@
 import genKeyPair from './genKeyPair';
 import createWallet from './createWallet';
+import createPublicIdAndWalletService from './createPublicIdAndWalletService';
 
 export const initialiseApp = async function (appId, appName, appVendor) {
     if(!window.safeApp) {
@@ -65,33 +66,39 @@ export const setupAccount = async function (appHandle, publicId) {
     // If we have permission...
     console.log('persmission', hasPermission);
     if(hasPermission) {
+    
+        const pubNamesHandle = await window.safeApp.getContainer(appHandle, '_publicNames');
+        console.log('Container obj: ', pubNamesHandle);
+        // Get user publicId
+        const encPubId = await window.safeMutableData.encryptKey(pubNamesHandle, publicId);
+        console.log('enc', encPubId);
         try {
-            const pubNamesHandle = await window.safeApp.getContainer(appHandle, '_publicNames');
-            console.log('Container obj: ', pubNamesHandle);
-            // Get user publicId
-            const encPubId = await window.safeMutableData.encryptKey(pubNamesHandle, publicId);
-            console.log('enc', encPubId);
             const publicName = await window.safeMutableData.get(pubNamesHandle, encPubId);
             console.log('Keys', encPubId, publicName);
-            const xorName = await pubNamesHandle.decrypt(publicName.buf);
+            const xorName = await window.safeMutableData.decrypt(pubNamesHandle, publicName.buf);
             console.log('Xor', xorName);
-            const appSignKey = await appHandle.crypto.getAppPubSignKey();
-            const md = await appHandle.mutableData.newPublic(xorName, 15003);
-            const userPermission = await md.getUserPermissions(appSignKey);
-            const keyPair = await genKeyPair(appHandle);
-            // Create Wallet
-            const walletMd = createWallet(keyPair.publicKey);
-            return walletMd;
-        }
-        catch(err) {
-            console.log('Errror', err);
+
+        } catch(err) {
+            console.log('Errr');
+            console.dir(err);
             if(err.code !== -106) {
                 console.log('Some error');
             } else {
                 // Generate new wallet for publicId
                 console.log('Doesnt have Start generating wallet.');
+                const keyPair = await genKeyPair(appHandle);
+                const walletMd = await createWallet(appHandle, keyPair);
+                const newAccount = {id: "wallet1", walletMd,
+                            encSk: keyPair.privateKey,
+                            encPk: keyPair.publicKey};
+                const walletSerialised = await window.safeMutableData.serialise(walletMd);
+                console.log('newAccount: ', newAccount);
+                console.log('walletSerialised: ', walletSerialised);
+                return createPublicIdAndWalletService(appHandle, pubNamesHandle, walletSerialised, publicId);
             }
         }
+        
+        
     }
 
     // const emailService = {
@@ -127,7 +134,7 @@ export const setupAccount = async function (appHandle, publicId) {
     //       // The public ID doesn't exist in _publicNames
     //       return genNewAccount(app, serviceInfo.emailId)
     //         .then((newAccount) => newAccount.inboxMd.serialise()
-    //           .then((inboxSerialised) => createPublicIdAndEmailService(app,
+    //           .then((inboxSerialised) => createPublicIdAndWalletService(app,
     //                               pubNamesMd, serviceInfo, inboxSerialised))
     //           .then(() => ({ newAccount }))
     //         )

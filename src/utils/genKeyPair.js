@@ -1,16 +1,11 @@
-export default app => {
-	let rawKeyPair = {};
-	return app.crypto.generateEncKeyPair().then(keyPair =>
-		keyPair.pubEncKey
-			.getRaw()
-			.then(rawPubEncKey => {
-				rawKeyPair.publicKey = rawPubEncKey.buffer.toString('hex');
-				return;
-			})
-			.then(() => keyPair.secEncKey.getRaw())
-			.then(rawSecEncKey => {
-				rawKeyPair.privateKey = rawSecEncKey.buffer.toString('hex');
-				return rawKeyPair;
-			})
-	);
+export default async function(app) {
+	const keyPairHandle = await window.safeCrypto.generateEncKeyPair(app);
+	const pubEncKey = await window.safeCryptoKeyPair.getPubEncKey(keyPairHandle);
+	const secEncKey = await window.safeCryptoKeyPair.getSecEncKey(keyPairHandle); 
+	const rawPubEncKey = await window.safeCryptoPubEncKey.getRaw(pubEncKey);
+	const rawSecEncKey = await window.safeCryptoSecEncKey.getRaw(secEncKey);
+	return {
+		publicKey: rawPubEncKey.buffer.toString('hex'),
+		privateKey: rawSecEncKey.buffer.toString('hex')
+	};
 };
