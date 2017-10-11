@@ -2,6 +2,7 @@ import { h, Component } from 'preact';
 import { Router, Route } from 'preact-router';
 
 import Dashboard from './components/Dashboard';
+import Home from './components/Home';
 import CreateWallet from './components/CreateWallet';
 import ErrorPage from './components/404';
 
@@ -12,6 +13,7 @@ import { route } from 'preact-router';
 import bindActions from './utils/bindActions';
 import reducers from './reducers';
 import { startInitializeApp, startAuthorizeApp } from './actions/authorization';
+import { getWalletIds } from './actions/wallet';
 
 @connect(reducers, bindActions({ startInitializeApp, startAuthorizeApp }))
 export default class Routes extends Component {
@@ -27,9 +29,11 @@ export default class Routes extends Component {
 		if(!initializing && !appHandle) {
 			return <h2>Connection Failed.</h2>;
 		}
+
 		return (
 			<Router>
-				<CreateWallet path='/' />
+				<Home path='/' />
+				<CreateWallet path='/create_wallet' />
 				<Dashboard path='/dashboard' />
 				<ErrorPage default />
 			</Router>
