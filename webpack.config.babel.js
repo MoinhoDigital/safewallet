@@ -161,9 +161,11 @@ module.exports = {
 
 	devtool: ENV !== 'production' && 'eval',
 	devServer: {
-		port: process.env.PORT || 3000,
+		port: process.env.PORT || 3001,
 		host: '0.0.0.0',
 		compress: true,
+		inline: false,
+		hot: false,
 		contentBase: './src',
 		historyApiFallback: true
 	}
