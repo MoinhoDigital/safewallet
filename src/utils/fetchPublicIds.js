@@ -7,6 +7,7 @@ export default async function(appHandle) {
   await window.safeMutableDataEntries.forEach(entriesHandle, (key, value) => {
     rawEntries.push({key, value});
   });
+  console.log('entries: ', rawEntries);
 
   const promises = rawEntries.map( async (entry) => {
     console.log(entry);

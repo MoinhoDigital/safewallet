@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import bindActions from '../utils/bindActions';
 import reducers from '../reducers';
-import { getWalletIds } from '../actions/wallet';
+import { getWalletIds, createWallet } from '../actions/wallet';
 import Wallet from './Wallet';
 
 const Form = styled.form`
@@ -15,27 +15,42 @@ const Form = styled.form`
 	margin: auto;
 `;
 
-@connect(reducers, bindActions({ getWalletIds }))
-export default class Home extends Component {
+@connect(reducers, bindActions({ getWalletIds, createWallet }))
+export default class Wallets extends Component {
 
 	getWallets = (appHandle) => {
 		console.log('getWallets', appHandle);
 		this.props.getWalletIds(appHandle);
 	};
 
+	submitWallet = (e, app) => {
+		e.preventDefault();
+		// const { appHandle } = this.props;
+		const { text } = this.state;
+		this.setState({ text: '' });
+		this.props.createWallet(app, text);
+	};
+
 	render({ wallets, authorizations: { appHandle, authUri } }, { text }) {
 		return (
 			<Container>
 				<Card shadow={2}>
-			        <Link href="/create_wallet">CreateWallet</Link>
-
-					<a onClick={(e) => this.context.router.push('/create_wallet')}>Create Wallet</a>
-					<a onClick={(e) => this.getWallets(appHandle)}>Load Wallets</a>
+			        <a onClick={(e) => this.getWallets(appHandle)}>Load Wallets</a>
 					<ul>
 						{ wallets.map(wallet => (
 							<Wallet key={wallet.id} wallet={wallet} />
 						)) }
 					</ul>
+					<Form onSubmit={(e) => this.submitWallet(e, appHandle)}>
+						<h6>Create a public ID</h6>
+						<TextField
+							floating-label
+							value={text}
+							onInput={e => this.setState({ text: e.target.value })}
+							label='Your public ID'
+						/>
+						<Button type="Submit">Create</Button>
+					</Form>
 				</Card>
 			</Container>
 		);

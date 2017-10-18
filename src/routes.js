@@ -2,7 +2,7 @@ import { h, Component } from 'preact';
 import { Router, Route } from 'preact-router';
 
 import Dashboard from './components/Dashboard';
-import Home from './components/Home';
+import Wallets from './components/Wallets';
 import CreateWallet from './components/CreateWallet';
 import ErrorPage from './components/404';
 
@@ -32,7 +32,7 @@ export default class Routes extends Component {
 
 		return (
 			<Router>
-				<Home path='/' />
+				<Wallets path='/' />
 				<CreateWallet path='/create_wallet' />
 				<Dashboard path='/dashboard' />
 				<ErrorPage default />
