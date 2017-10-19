@@ -1,9 +1,14 @@
-/build
-/node_modules
-/coverage
-/npm-debug.log
 .DS_Store
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
 .idea
-.env
-.yarn-error.log
-.history/
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
