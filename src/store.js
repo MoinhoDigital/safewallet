@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { initialiseApp, connectAndAuthorizeApp, setupAccount } from './utils/safeApp'
 import fetchWalletIds from './utils/fetchWalletIds'
+const safeCoinsWallet = require('safe-coins-wallet')
 
 Vue.use(Vuex)
 
@@ -28,6 +29,9 @@ export default new Vuex.Store({
     updateInput: (state, payload) => {
       state.input = payload
     },
+    wallet: (state, payload) => {
+      state.wallet = payload
+    },
     newAccount: (state, payload) => {
       state.newAccount = payload
     },
@@ -44,6 +48,18 @@ export default new Vuex.Store({
       const authUri = await connectAndAuthorizeApp(state.appHandle)
       commit('authorise', { authUri })
     },
+    async createWallet ({ commit, state }, input) {
+      console.log('createWallet: ', input)
+      const wallet = await safeCoinsWallet.createWallet(state.appHandle, input)
+      const txInbox = await safeCoinsWallet.createTxInbox(state.appHandle, input)
+      const walletCoins = await safeCoinsWallet.loadWalletData(state.appHandle, wallet)
+
+      console.log('created Wallet: ', wallet)
+      console.log('created txInbox: ', txInbox)
+      console.log('Wallet coins: ', walletCoins)
+      commit('wallet', wallet)
+    },
+
     async setupAccount ({ commit, state }, input) {
       console.log('INPUT', input)
       const newAccount = await setupAccount(state.appHandle, input)
