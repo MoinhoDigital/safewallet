@@ -1,14 +1,26 @@
 <template>
   <div class="wallet">
-      <h1>{{ appHandle || '...' }}</h1>
-      <md-button @click="initialise">Initialise</md-button>
-      <h1>{{ authUri || '...' }}</h1>
-      <md-button @click="authorise">Authorise</md-button>
-      <md-input-container>
-        <label>Your ID</label>
-        <md-input v-model="input"></md-input>
-      </md-input-container>
-      <md-button @click="createWallet(input)">Setup Account</md-button>
+      <span>{{ appHandle || '...' }}</span>
+      <md-button @click="initialise" v-if="!appHandle">Initialise</md-button>
+      <span v-if="authUri">{{ authUri || '...' }}</span>
+      <md-button @click="authorise" v-if="!authUri">Authorise</md-button>
+      <div v-if="!walletSerialized">
+        <md-input-container >
+          <label>Your ID</label>
+          <md-input v-model="input"></md-input>
+        </md-input-container>
+        <md-button @click="createWallet(input)">Create Wallet</md-button>
+      </div>
+      <div v-if="walletSerialized">
+        <h4>Current wallet ID: {{ pk }}</h4>
+        <md-input-container >
+          <label>Asset Name:</label>
+          <md-input v-model="assetForm.asset"></md-input>
+          <md-input v-model="assetForm.quantity"></md-input>
+        </md-input-container>
+        <md-button @click="createAsset(assetForm)">Create Asset</md-button>
+      </div>
+      <h2>Coins: {{ coins }}</h2>
   </div>
 </template>
 
@@ -25,12 +37,29 @@ export default {
     authUri () {
       return this.$store.state.authUri
     },
+    walletSerialized () {
+      return this.$store.state.walletSerialized
+    },
+    pk () {
+      return this.$store.state.walletSerialized
+    },
+    coins () {
+      return this.$store.state.inboxData
+    },
     input: {
       get () {
         return this.$store.state.input
       },
       set (value) {
         this.$store.commit('updateInput', value)
+      }
+    },
+    assetForm: {
+      get () {
+        return this.$store.state.assetForm
+      },
+      set (value) {
+        this.$store.commit('assetForm', value)
       }
     }
   },
@@ -43,6 +72,10 @@ export default {
     },
     createWallet (input) {
       this.$store.dispatch('createWallet', input)
+    },
+    createAsset (assetForm) {
+      console.log('assetFOrm: ', assetForm)
+      this.$store.dispatch('createAsset', assetForm)
     }
   }
 }
