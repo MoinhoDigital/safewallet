@@ -2,9 +2,9 @@
   <div id="app">
     <md-toolbar>
       <md-button class="md-icon-button">
-        <md-icon>#</md-icon>
+        <!-- <md-icon>#</md-icon> -->
       </md-button>
-      <h2 class="md-title" style="flex: 1">Wallet!!!</h2>
+      <h2 class="md-title" style="flex: 1">Safe Wallet</h2>
     </md-toolbar>
     <router-view/>
   </div>
@@ -12,7 +12,15 @@
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  mounted: function () {
+    this.$nextTick(function () {
+      const { dispatch, state: { appHandle, authUri } } = this.$store
+      if (!appHandle || !authUri) {
+        dispatch('init')
+      }
+    })
+  }
 }
 </script>
 

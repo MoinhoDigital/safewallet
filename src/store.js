@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { initialiseApp, connectAndAuthorizeApp, setupAccount } from './utils/safeApp'
+import { init } from '../../websafe'
+import { setupAccount } from './utils/safeApp'
 import fetchWalletIds from './utils/fetchWalletIds'
 import { mintCoin, sendTxNotif } from './utils/faucet'
 const safeCoinsWallet = require('safe-coins-wallet')
@@ -25,13 +26,10 @@ export default new Vuex.Store({
   mutations: {
     increment: state => state.count++,
     decrement: state => state.count--,
-    initialise: (state, payload) => {
-      const { appHandle } = payload
-      state.appHandle = appHandle
-    },
-    authorise: (state, payload) => {
-      const { authUri } = payload
+    init: (state, payload) => {
+      const { appHandle, authUri } = payload
       state.authUri = authUri
+      state.appHandle = appHandle
     },
     updateInput: (state, payload) => {
       state.input = payload
@@ -62,26 +60,32 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async startInitialise ({ commit }) {
-      const appHandle = await initialiseApp('wallet.moinhodigital.0.1', 'Wallet', 'luandro')
-      commit('initialise', { appHandle })
-    },
-    async startAuthorise ({ commit, state }) {
-      const authUri = await connectAndAuthorizeApp(state.appHandle)
-      commit('authorise', { authUri })
+    async init ({ commit }) {
+      const { appHandle, authUri } = await init(
+        { id: 'wallet.moinhodigital.0.1', name: 'Wallet', vendor: 'luandro' },
+        {
+          _public: ['Read', 'Insert', 'Update', 'Delete'],
+          _publicNames: ['Read', 'Insert', 'Update', 'Delete']
+        },
+        true
+      )
+      commit('init', { appHandle, authUri })
     },
     async createWallet ({ commit, state }, input) {
       console.log('createWallet: ', input)
-      const wallet = await safeCoinsWallet.createWallet(state.appHandle, input)
-      const inbox = await safeCoinsWallet.createTxInbox(state.appHandle, input)
-      const walletCoins = await safeCoinsWallet.loadWalletData(state.appHandle, wallet)
-
-      console.log('Current Wallet: ', wallet)
-      console.log('created inbox: ', inbox)
-      console.log('Wallet coins: ', walletCoins)
-      commit('setPk', input)
-      commit('setWallet', wallet)
-      commit('inbox', inbox)
+      try {
+        const wallet = await safeCoinsWallet.createWallet(state.appHandle, input)
+        const inbox = await safeCoinsWallet.createTxInbox(state.appHandle, input)
+        const walletCoins = await safeCoinsWallet.loadWalletData(state.appHandle, wallet)
+        console.log('Current Wallet: ', wallet)
+        console.log('created inbox: ', inbox)
+        console.log('Wallet coins: ', walletCoins)
+        commit('setPk', input)
+        commit('setWallet', wallet)
+        commit('inbox', inbox)
+      } catch (err) {
+        console.log('Error creating wallet: ', err)
+      }
     },
     async createAsset ({ commit, state }, formData) {
       function mintCoins (pk, amount) {

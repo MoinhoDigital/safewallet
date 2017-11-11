@@ -1,9 +1,5 @@
 <template>
   <div class="wallet">
-      <span>{{ appHandle || '...' }}</span>
-      <md-button @click="initialise" v-if="!appHandle">Initialise</md-button>
-      <span v-if="authUri">{{ authUri || '...' }}</span>
-      <md-button @click="authorise" v-if="!authUri">Authorise</md-button>
       <div v-if="!walletSerialized">
         <md-input-container >
           <label>Your ID</label>
@@ -27,16 +23,7 @@
 <script>
 export default {
   name: 'Wallet',
-  mounted: () => {
-    console.log('Mounted@@@Wallet')
-  },
   computed: {
-    appHandle () {
-      return this.$store.state.appHandle
-    },
-    authUri () {
-      return this.$store.state.authUri
-    },
     walletSerialized () {
       return this.$store.state.walletSerialized
     },
@@ -64,12 +51,6 @@ export default {
     }
   },
   methods: {
-    initialise () {
-      this.$store.dispatch('startInitialise')
-    },
-    authorise () {
-      this.$store.dispatch('startAuthorise')
-    },
     createWallet (input) {
       this.$store.dispatch('createWallet', input)
     },
