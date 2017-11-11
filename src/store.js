@@ -1,31 +1,29 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { init } from '../../websafe'
-import { setupAccount } from './utils/safeApp'
+import { init, get } from '../../websafe'
+// import { setupAccount } from './utils/safeApp'
 import fetchWalletIds from './utils/fetchWalletIds'
 import { mintCoin, sendTxNotif } from './utils/faucet'
-const safeCoinsWallet = require('safe-coins-wallet')
+import safeCoinsWallet from 'safe-coins-wallet'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    count: 0,
     appHandle: null,
     authUri: null,
+    publicNames: null,
     walletSerialized: null,
     pk: null,
     coins: null,
     inbox: null,
     inboxData: null,
-    newAccount: null,
-    input: 'Janus Correl',
-    assetForm: {asset: 'TST', quantity: 3},
+    // newAccount: null,
+    input: 'Satoshi Nakamoto',
+    assetForm: { asset: 'BTC', quantity: 15 },
     walletIds: []
   },
   mutations: {
-    increment: state => state.count++,
-    decrement: state => state.count--,
     init: (state, payload) => {
       const { appHandle, authUri } = payload
       state.authUri = authUri
@@ -52,9 +50,9 @@ export default new Vuex.Store({
     inboxData: (state, payload) => {
       state.inboxData = payload
     },
-    newAccount: (state, payload) => {
-      state.newAccount = payload
-    },
+    // newAccount: (state, payload) => {
+    //   state.newAccount = payload
+    // },
     updateWalletIds: (state, payload) => {
       payload.map(wallet => state.walletIds.push(wallet))
     }
@@ -70,6 +68,9 @@ export default new Vuex.Store({
         true
       )
       commit('init', { appHandle, authUri })
+    },
+    async getWallet ({ commit, state }) {
+      await get(state.appHandle, 'wallet', 19882018)
     },
     async createWallet ({ commit, state }, input) {
       console.log('createWallet: ', input)
@@ -110,29 +111,20 @@ export default new Vuex.Store({
         return
       }
       console.log(`Minting coins for '${pk}'`)
-      await mintCoins(pk, formData.quantity)
-        .then((coinIds) => {
-          console.log('Notifying coins transfer to recipient\'s wallet inbox...')
-          return sendTxNotif(state.appHandle, pk, coinIds)
-        })
-        .then(async () => {
-          console.log(`Asset coins minted!`)
-          // const coins = await safeCoinsWallet.loadWalletData(state.appHandle, state.walletSerialized)
-          console.log(state)
-          const inboxData = await safeCoinsWallet.readTxInboxData(state.appHandle, state.pk, state.inbox.pk, state.inbox.sk)
-
-          // console.log('coins: ', coins)
-          console.log('inboxData: ', inboxData)
-
-          // commit('coins', coins)
-          commit('inboxData', inboxData)
-        })
+      const coinIds = await mintCoins(pk, formData.quantity)
+      console.log('Notifying coins transfer to recipient\'s wallet inbox...')
+      await sendTxNotif(state.appHandle, pk, coinIds)
+      console.log(`Asset coins minted!`)
+      console.log(state)
+      const inboxData = await safeCoinsWallet.readTxInboxData(state.appHandle, state.pk, state.inbox.pk, state.inbox.sk)
+      console.log('inboxData: ', inboxData)
+      commit('inboxData', inboxData)
     },
-    async setupAccount ({ commit, state }, input) {
-      console.log('INPUT', input)
-      const newAccount = await setupAccount(state.appHandle, input)
-      commit('newAccount', newAccount)
-    },
+    // async setupAccount ({ commit, state }, input) {
+    //   console.log('INPUT', input)
+    //   const newAccount = await setupAccount(state.appHandle, input)
+    //   commit('newAccount', newAccount)
+    // },
     async fetchWalletIds ({commit, state}) {
       console.log('WalletIDs', state)
       const walletIds = await fetchWalletIds(state.appHandle)
