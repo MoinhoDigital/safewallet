@@ -2,11 +2,13 @@
   <div id="app">
     <md-toolbar>
       <md-button class="md-icon-button md-list-action">
-        <md-icon>code</md-icon>
+        <md-icon></md-icon>
       </md-button>
       <h2 class="md-title" style="flex: 1">Safe Wallet</h2>
     </md-toolbar>
-    <router-view/>
+    <md-layout md-gutter>
+      <router-view/>
+    </md-layout>
   </div>
 </template>
 
@@ -18,8 +20,7 @@ export default {
       const { dispatch, state: { appHandle, authUri } } = this.$store
       if (!appHandle || !authUri) {
         await dispatch('init')
-        const wallet = await dispatch('getWallet')
-        console.log('W', wallet)
+        // const wallet = await dispatch('getWallet')
       }
     })
   }

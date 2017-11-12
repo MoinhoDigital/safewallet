@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { init, get } from '../../websafe'
+// import { deserialiseArray, genXorName } from '../../websafe/utils'
 // import { setupAccount } from './utils/safeApp'
 import fetchWalletIds from './utils/fetchWalletIds'
 import { mintCoin, sendTxNotif } from './utils/faucet'
@@ -12,15 +13,13 @@ export default new Vuex.Store({
   state: {
     appHandle: null,
     authUri: null,
-    publicNames: null,
     walletSerialized: null,
     pk: null,
-    coins: null,
-    inbox: null,
-    inboxData: null,
+    inbox: [],
+    inboxData: [],
     // newAccount: null,
     input: 'Satoshi Nakamoto',
-    assetForm: { asset: 'BTC', quantity: 15 },
+    assetForm: { asset: 'BTC', quantity: 3 },
     walletIds: []
   },
   mutations: {
@@ -41,13 +40,11 @@ export default new Vuex.Store({
     assetForm: (state, payload) => {
       state.assetForm = payload
     },
-    coins: (state, payload) => {
-      state.coins = payload
-    },
     inbox: (state, payload) => {
       state.inbox = payload
     },
     inboxData: (state, payload) => {
+      // Vue.set(state, 'inboxData', payload)
       state.inboxData = payload
     },
     // newAccount: (state, payload) => {
@@ -75,9 +72,15 @@ export default new Vuex.Store({
     async createWallet ({ commit, state }, input) {
       console.log('createWallet: ', input)
       try {
+        // creates a new wallet using user input and outputs new wallet id.
         const wallet = await safeCoinsWallet.createWallet(state.appHandle, input)
         const inbox = await safeCoinsWallet.createTxInbox(state.appHandle, input)
         const walletCoins = await safeCoinsWallet.loadWalletData(state.appHandle, wallet)
+        // const decWallet = deserialiseArray(wallet)
+        // const mdHandle = await window.safeMutableData.fromSerial(state.appHandle, decWallet)
+        // const xorInput = await genXorName(state.appHandle, state.input)
+        // console.log('Got xor', xorInput)
+        // const rawWallet = await window.safeMutableData.get(mdHandle, xorInput)
         console.log('Current Wallet: ', wallet)
         console.log('created inbox: ', inbox)
         console.log('Wallet coins: ', walletCoins)
@@ -105,7 +108,6 @@ export default new Vuex.Store({
             return ids
           })
       }
-      console.log(formData)
       let pk = state.pk
       if (pk.length < 1) {
         return
@@ -113,12 +115,10 @@ export default new Vuex.Store({
       console.log(`Minting coins for '${pk}'`)
       const coinIds = await mintCoins(pk, formData.quantity)
       console.log('Notifying coins transfer to recipient\'s wallet inbox...')
-      await sendTxNotif(state.appHandle, pk, coinIds)
+      await sendTxNotif(state.appHandle, pk, coinIds, formData.asset)
       console.log(`Asset coins minted!`)
-      console.log(state)
       const inboxData = await safeCoinsWallet.readTxInboxData(state.appHandle, state.pk, state.inbox.pk, state.inbox.sk)
-      console.log('inboxData: ', inboxData)
-      commit('inboxData', inboxData)
+      await commit('inboxData', inboxData)
     },
     // async setupAccount ({ commit, state }, input) {
     //   console.log('INPUT', input)

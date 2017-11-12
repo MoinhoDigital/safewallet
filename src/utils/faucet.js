@@ -62,11 +62,11 @@ const _encrypt = (appHandle, input, pk) => {
     .then((pubEncKeyHandle) => window.safeCryptoPubEncKey.encryptSealed(pubEncKeyHandle, input))
 }
 
-export const sendTxNotif = (appHandle, pk, coinIds) => {
+export const sendTxNotif = (appHandle, pk, coinIds, name) => {
   let txId = _genTxId()
   let tx = {
     coinIds: coinIds,
-    msg: 'In exchange for your feedback about the SAFE Wallet!',
+    name,
     date: (new Date()).toUTCString()
   }
 
