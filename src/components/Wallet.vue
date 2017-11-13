@@ -3,22 +3,16 @@
       <!-- Quebrar em vários componentes -->
       <!-- Painel -->
       <md-layout md-gutter md-align="center">
+        <select-wallet></select-wallet>
+        <create-wallet></create-wallet>
         <md-layout md-align="center" md-gutter md-row-large>
           <!-- Inputs -->
           <md-card class="card hero">
             <md-card-header>
-              <div class="md-title" v-if="!walletSerialized">Create new private key</div>
-              <div class="md-title" v-else>Create a new asset</div>
+              <div class="md-title">Create a new asset</div>
             </md-card-header>
             <md-card-content>
-              <div v-if="!walletSerialized">
-                <md-input-container >
-                  <label>Your ID</label>
-                  <md-input v-model="input" required></md-input>
-                  <span class="md-error">Validation message</span>
-                </md-input-container>
-              </div>
-              <div v-if="walletSerialized">
+              <div>
                 <h4>Current wallet ID: {{ pk }}</h4>
                 <md-input-container >
                   <label>Asset Name:</label>
@@ -28,8 +22,7 @@
               </div>
             </md-card-content>
             <md-card-actions>
-              <md-button v-if="!walletSerialized" @click="createWallet(input)">Create Wallet</md-button>
-              <md-button v-if="walletSerialized" @click="createAsset(assetForm)">Create Asset</md-button>
+              <md-button @click="createAsset(assetForm)">Create Asset</md-button>
             </md-card-actions>
           </md-card>
         </md-layout>
@@ -99,25 +92,23 @@
 </template>
 
 <script>
+import SelectWallet from './SelectWallet.vue'
+import CreateWallet from './CreateWallet.vue'
 export default {
-  name: 'Wallet',
+  name: 'wallet',
+  components: {
+    'select-wallet': SelectWallet,
+    'create-wallet': CreateWallet
+  },
   computed: {
-    walletSerialized () {
-      return this.$store.state.walletSerialized
+    walletList () {
+      return this.$store.state.walletList
     },
     pk () {
       return this.$store.state.pk
     },
     inboxes () {
       return this.$store.state.inboxData
-    },
-    input: {
-      get () {
-        return this.$store.state.input
-      },
-      set (value) {
-        this.$store.commit('updateInput', value)
-      }
     },
     assetForm: {
       get () {
@@ -137,9 +128,6 @@ export default {
     }
   },
   methods: {
-    createWallet (input) {
-      this.$store.dispatch('createWallet', input)
-    },
     createAsset (assetForm) {
       this.$store.dispatch('createAsset', assetForm)
     },

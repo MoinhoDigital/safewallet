@@ -17,13 +17,12 @@ export default {
   name: 'app',
   mounted: function () {
     this.$nextTick(async function () {
-      const { dispatch, state: { appHandle, authUri, ids } } = this.$store
+      const { dispatch, state: { appHandle, authUri, wallets } } = this.$store
       if (!appHandle || !authUri) {
         await dispatch('init')
-        // const wallet = await dispatch('getWallet')
       }
-      if (!ids) {
-        await dispatch('getWallet')
+      if (!wallets) {
+        await dispatch('getWallets')
       }
     })
   }
