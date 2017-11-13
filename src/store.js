@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { init, get, mintCoin, sendTxNotif, loadWalletData, readTxInboxData, createWallet, createTxInbox } from './websafe'
+import { init, get, mintCoin, sendTxNotif, loadWalletData, readTxInboxData, createWallet, createTxInbox, transferCoin } from './websafe'
 // import safeCoins from 'safe-coins-wallet'
 
 const inboxTagType = 20082018
@@ -37,12 +37,14 @@ export default new Vuex.Store({
   state: {
     appHandle: null,
     authUri: null,
+    ids: null,
     walletSerialized: null,
     pk: null,
     inbox: [],
     inboxData: [],
     input: 'Satoshi Nakamoto',
-    assetForm: { asset: 'BTC', quantity: 3 }
+    assetForm: { asset: 'BTC', quantity: 3 },
+    transferForm: 3
   },
   mutations: {
     init: (state, payload) => {
@@ -53,14 +55,17 @@ export default new Vuex.Store({
     updateInput: (state, payload) => {
       state.input = payload
     },
+    assetForm: (state, payload) => {
+      state.assetForm = payload
+    },
+    transferForm: (state, payload) => {
+      state.assetForm = payload
+    },
     setWallet: (state, payload) => {
       state.walletSerialized = payload
     },
     setPk: (state, payload) => {
       state.pk = payload
-    },
-    assetForm: (state, payload) => {
-      state.assetForm = payload
     },
     setInbox: (state, payload) => {
       state.inbox = payload
@@ -78,7 +83,8 @@ export default new Vuex.Store({
       commit('init', { appHandle, authUri })
     },
     async getWallet ({ commit, state }) {
-      await get(state.appHandle, 'wallet', 19882018)
+      const data = await get(state.appHandle, walletInfo.name, walletInfo.tagType)
+      console.log(data)
     },
     async createWallet ({ commit, state }, input) {
       try {
@@ -96,20 +102,20 @@ export default new Vuex.Store({
       }
     },
     async createAsset ({ commit, state }, formData) {
-      assetInfo.name = formData.asset
+      const { asset, quantity } = formData
+      assetInfo.name = asset
       const { appHandle, pk, inbox } = state
+      let mintedCoins = []
       async function mintCoins (privateKey, amount) {
         if (amount < 1 || privateKey.length < 1) {
-          return
+          return mintedCoins
         }
-        let coinIds = []
         const coinId = await mintCoin(appHandle, privateKey, assetInfo)
-        console.log('Coin minted width id: ', coinId)
-        coinIds.push(coinId)
-        return coinIds
+        mintedCoins.push(coinId)
+        return mintCoins(privateKey, amount - 1)
       }
-      console.log(`Minting coins for '${pk}'`)
-      const coinIds = await mintCoins(pk, formData.quantity)
+      console.log(`Minting ${quantity} coins for '${pk}'`)
+      const coinIds = await mintCoins(pk, quantity)
       console.log('Notifying coins transfer to recipient\'s wallet inbox...')
       const txId = await sendTxNotif(appHandle, pk, coinIds, assetInfo)
       console.log(`Asset coins minted!`, txId)
@@ -117,6 +123,18 @@ export default new Vuex.Store({
       inboxInfo.encSk = inbox.sk
       const inboxData = await readTxInboxData(appHandle, pk, inboxInfo)
       await commit('inboxData', inboxData)
+    },
+    async transferAssets ({ commit, state }) {
+      const { appHandle, pk, inbox, inboxData } = state
+      inboxData[0].coinIds.map(async (coinId) => {
+        const coinInfo = {
+          id: coinId,
+          key: walletInfo.key,
+          tagType: walletInfo.tagType
+        }
+        const transfer = await transferCoin(appHandle, pk, inbox.sk, coinInfo, 'Satoshi Nakamoto')
+        console.log('TX', transfer)
+      })
     }
   }
 })

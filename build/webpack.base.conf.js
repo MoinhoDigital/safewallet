@@ -46,7 +46,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         options: {
-          presets: [require('babel-preset-stage-2')],
+          presets: [require('babel-preset-stage-2'), require('babel-preset-es2015')],
           plugins: [require('babel-plugin-transform-object-rest-spread')]
         },
         include: [resolve('src'), resolve('test')]
