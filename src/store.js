@@ -137,11 +137,12 @@ export default new Vuex.Store({
         const serialisedData = JSON.stringify(rawData)
         const saveWallet = await put(state.appHandle, idsInfo, { [input]: serialisedData })
         if (saveWallet) {
-          console.log('created inbox: ', inbox)
+          const walletList = await get(state.appHandle, idsInfo.key, idsInfo.tagType)
           const coinIds = await loadWalletData(state.appHandle, wallet, walletInfo.key)
           console.log('coinIds', coinIds)
           rawData.id = input
           commit('setWallet', rawData)
+          commit('setWalletList', walletList)
         }
       } catch (err) {
         console.log('Error creating wallet: ', err)
