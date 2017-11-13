@@ -1,11 +1,35 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { init, get } from '../../websafe'
-// import { deserialiseArray, genXorName } from '../../websafe/utils'
-// import { setupAccount } from './utils/safeApp'
-import fetchWalletIds from './utils/fetchWalletIds'
-import { mintCoin, sendTxNotif } from './utils/faucet'
-import safeCoinsWallet from 'safe-coins-wallet'
+import { init, get, mintCoin, sendTxNotif, loadWalletData, readTxInboxData, createWallet, createTxInbox } from './websafe'
+// import safeCoins from 'safe-coins-wallet'
+
+const inboxTagType = 20082018
+let appInfo = {
+  id: 'wallet.moinhodigital.0.1',
+  name: 'Wallet',
+  vendor: 'luandro'
+}
+const perms = {
+  _public: ['Read', 'Insert', 'Update', 'Delete'],
+  _publicNames: ['Read', 'Insert', 'Update', 'Delete']
+}
+let walletInfo = {
+  name: 'Wallet',
+  description: 'Container to receive notifications for wallet transactions',
+  key: '__coins',
+  tagType: 1012017
+}
+let inboxInfo = {
+  key: '__tx_enc_pk',
+  metadataKey: '_metadata',
+  name: 'ThanksCoins TX Inbox',
+  description: 'Container to receive notifications of ThanksCoins transactions',
+  tagType: inboxTagType
+}
+let assetInfo = {
+  key: '__tx_enc_pk',
+  tagType: inboxTagType
+}
 
 Vue.use(Vuex)
 
@@ -17,10 +41,8 @@ export default new Vuex.Store({
     pk: null,
     inbox: [],
     inboxData: [],
-    // newAccount: null,
     input: 'Satoshi Nakamoto',
-    assetForm: { asset: 'BTC', quantity: 3 },
-    walletIds: []
+    assetForm: { asset: 'BTC', quantity: 3 }
   },
   mutations: {
     init: (state, payload) => {
@@ -40,95 +62,61 @@ export default new Vuex.Store({
     assetForm: (state, payload) => {
       state.assetForm = payload
     },
-    inbox: (state, payload) => {
+    setInbox: (state, payload) => {
       state.inbox = payload
     },
     inboxData: (state, payload) => {
-      // Vue.set(state, 'inboxData', payload)
       state.inboxData = payload
     },
-    // newAccount: (state, payload) => {
-    //   state.newAccount = payload
-    // },
     updateWalletIds: (state, payload) => {
       payload.map(wallet => state.walletIds.push(wallet))
     }
   },
   actions: {
     async init ({ commit }) {
-      const { appHandle, authUri } = await init(
-        { id: 'wallet.moinhodigital.0.1', name: 'Wallet', vendor: 'luandro' },
-        {
-          _public: ['Read', 'Insert', 'Update', 'Delete'],
-          _publicNames: ['Read', 'Insert', 'Update', 'Delete']
-        },
-        true
-      )
+      const { appHandle, authUri } = await init(appInfo, perms, true)
       commit('init', { appHandle, authUri })
     },
     async getWallet ({ commit, state }) {
       await get(state.appHandle, 'wallet', 19882018)
     },
     async createWallet ({ commit, state }, input) {
-      console.log('createWallet: ', input)
       try {
-        // creates a new wallet using user input and outputs new wallet id.
-        const wallet = await safeCoinsWallet.createWallet(state.appHandle, input)
-        const inbox = await safeCoinsWallet.createTxInbox(state.appHandle, input)
-        const walletCoins = await safeCoinsWallet.loadWalletData(state.appHandle, wallet)
-        // const decWallet = deserialiseArray(wallet)
-        // const mdHandle = await window.safeMutableData.fromSerial(state.appHandle, decWallet)
-        // const xorInput = await genXorName(state.appHandle, state.input)
-        // console.log('Got xor', xorInput)
-        // const rawWallet = await window.safeMutableData.get(mdHandle, xorInput)
+        const wallet = await createWallet(state.appHandle, input, walletInfo)
         console.log('Current Wallet: ', wallet)
+        const inbox = await createTxInbox(state.appHandle, input, inboxInfo)
         console.log('created inbox: ', inbox)
+        const walletCoins = await loadWalletData(state.appHandle, wallet, walletInfo.key)
         console.log('Wallet coins: ', walletCoins)
         commit('setPk', input)
         commit('setWallet', wallet)
-        commit('inbox', inbox)
+        commit('setInbox', inbox)
       } catch (err) {
         console.log('Error creating wallet: ', err)
       }
     },
     async createAsset ({ commit, state }, formData) {
-      function mintCoins (pk, amount) {
-        if (amount < 1) {
-          return Promise.resolve([])
+      assetInfo.name = formData.asset
+      const { appHandle, pk, inbox } = state
+      async function mintCoins (privateKey, amount) {
+        if (amount < 1 || privateKey.length < 1) {
+          return
         }
-        let id
-        return mintCoin(state.appHandle, pk)
-          .then((_id) => {
-            id = _id
-            console.log('Coin minted at: ', id)
-            return mintCoins(pk, amount - 1)
-          })
-          .then((ids) => {
-            ids.push(id)
-            return ids
-          })
-      }
-      let pk = state.pk
-      if (pk.length < 1) {
-        return
+        let coinIds = []
+        const coinId = await mintCoin(appHandle, privateKey, assetInfo)
+        console.log('Coin minted width id: ', coinId)
+        coinIds.push(coinId)
+        return coinIds
       }
       console.log(`Minting coins for '${pk}'`)
       const coinIds = await mintCoins(pk, formData.quantity)
       console.log('Notifying coins transfer to recipient\'s wallet inbox...')
-      await sendTxNotif(state.appHandle, pk, coinIds, formData.asset)
-      console.log(`Asset coins minted!`)
-      const inboxData = await safeCoinsWallet.readTxInboxData(state.appHandle, state.pk, state.inbox.pk, state.inbox.sk)
+      const txId = await sendTxNotif(appHandle, pk, coinIds, assetInfo)
+      console.log(`Asset coins minted!`, txId)
+      inboxInfo.encPk = inbox.pk
+      inboxInfo.encSk = inbox.sk
+      const inboxData = await readTxInboxData(appHandle, pk, inboxInfo)
       await commit('inboxData', inboxData)
-    },
-    // async setupAccount ({ commit, state }, input) {
-    //   console.log('INPUT', input)
-    //   const newAccount = await setupAccount(state.appHandle, input)
-    //   commit('newAccount', newAccount)
-    // },
-    async fetchWalletIds ({commit, state}) {
-      console.log('WalletIDs', state)
-      const walletIds = await fetchWalletIds(state.appHandle)
-      commit('updateWalletIds', walletIds)
     }
   }
 })

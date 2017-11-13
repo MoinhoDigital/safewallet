@@ -35,6 +35,9 @@ const webpackConfig = merge(baseWebpackConfig, {
       compress: {
         warnings: false
       },
+      // options: {
+      //   presets: ['es2015']
+      // },
       sourceMap: true
     }),
     // extract css into its own file
