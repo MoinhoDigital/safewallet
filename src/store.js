@@ -2,10 +2,11 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import {
   init, get, put, getPublicNames,
-  mintCoin, sendTxNotif, loadWalletData, readTxInboxData, createWallet, createTxInbox, transferCoin
+  mintCoin, sendTxNotif, loadWalletData, storeCoinsToWallet, readTxInboxData, createWallet, createTxInbox, transferCoin
 } from './websafe'
 // import safeCoins from 'safe-coins-wallet'
 
+const coinTagType = 21082018
 const inboxTagType = 20082018
 const walletTagType = 1012017
 let appInfo = {
@@ -37,8 +38,8 @@ let inboxInfo = {
   tagType: inboxTagType
 }
 let assetInfo = {
-  key: inboxInfo.key,
-  tagType: inboxTagType
+  key: 'coin-data',
+  tagType: coinTagType
 }
 
 Vue.use(Vuex)
@@ -113,10 +114,8 @@ export default new Vuex.Store({
         const pk = state.walletList[index].id
         inboxInfo.encPk = state.walletList[index].pk
         inboxInfo.encSk = state.walletList[index].sk
-        console.log(inboxInfo)
-        console.log(serialisedWallet, pk)
-        const coinIds = await loadWalletData(state.appHandle, serialisedWallet, walletInfo.key)
         const inboxData = await readTxInboxData(state.appHandle, pk, inboxInfo)
+        const coinIds = await loadWalletData(state.appHandle, serialisedWallet, walletInfo.key)
         console.log('coinIds', coinIds)
         commit('inboxData', inboxData)
         commit('setWallet', state.walletList[index])
@@ -165,7 +164,8 @@ export default new Vuex.Store({
       const coinIds = await mintCoins(wallet.id, quantity)
       console.log('IDS', coinIds)
       console.log('Notifying coins transfer to recipient\'s wallet inbox...')
-      const txId = await sendTxNotif(appHandle, wallet.id, coinIds, assetInfo)
+      await storeCoinsToWallet(appHandle, wallet.wallet, coinIds, walletInfo.key)
+      const txId = await sendTxNotif(appHandle, wallet.id, coinIds, inboxInfo, 'received')
       console.log(`Asset coins minted!`, txId)
       inboxInfo.encPk = wallet.pk
       inboxInfo.encSk = wallet.sk
@@ -177,12 +177,17 @@ export default new Vuex.Store({
       inboxData[0].coinIds.map(async (coinId) => {
         const coinInfo = {
           id: coinId,
-          key: walletInfo.key,
-          tagType: walletInfo.tagType
+          key: assetInfo.key,
+          tagType: assetInfo.tagType
         }
-        const transfer = await transferCoin(appHandle, wallet.id, wallet.sk, coinInfo, 'Satoshi Nakamoto')
-        console.log('TX', transfer)
+        const transfer = await transferCoin(appHandle, wallet.id, wallet.sk, coinInfo, 'Satoshi NakamotoR')
+
+        console.log('Coin transfer:', transfer)
       })
+      const subsTx = await sendTxNotif(appHandle, wallet.id, inboxData[0].coinIds, inboxInfo, 'sent')
+      await storeCoinsToWallet(appHandle, wallet.wallet, inboxData[0].coinIds, walletInfo.key)
+      const addTx = await sendTxNotif(appHandle, 'Satoshi NakamotoR', inboxData[0].coinIds, inboxInfo, 'received')
+      console.log('Transaction TX id:', subsTx, addTx)
     }
   }
 })
