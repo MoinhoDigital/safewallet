@@ -9,12 +9,20 @@
     <md-layout md-gutter>
       <router-view/>
     </md-layout>
+    <fab
+      @cache="cache"
+      @alertMe="alert"
+    ></fab>
   </div>
 </template>
 
 <script>
+import fab from 'vue-fab'
 export default {
   name: 'app',
+  components: {
+    fab
+  },
   mounted: function () {
     this.$nextTick(async function () {
       const { dispatch, state: { appHandle, authUri, wallets } } = this.$store
@@ -25,6 +33,30 @@ export default {
         await dispatch('getWallets')
       }
     })
+  },
+  data () {
+    return {
+      bgColor: '#778899',
+      position: 'top-right',
+      fabActions: [
+        {
+          name: 'cache',
+          icon: 'cached'
+        },
+        {
+          name: 'alertMe',
+          icon: 'add_alert'
+        }
+      ]
+    }
+  },
+  methods: {
+    cache () {
+      console.log('Cache Cleared')
+    },
+    alert () {
+      alert('Clicked on alert icon')
+    }
   }
 }
 </script>

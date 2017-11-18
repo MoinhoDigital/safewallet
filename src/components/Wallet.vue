@@ -27,38 +27,7 @@
           </md-card>
         </md-layout>
         <md-layout md-align="center" md-gutter md-flex="90">
-          <md-layout md-align="center" md-gutter md-flex="45" class="layout">
-            <md-table-card class="card">
-              <md-card-header>
-                <div class="md-title">Portfolio</div>
-              </md-card-header>
-              <md-card-content>
-                <md-table>
-                  <md-table-header>
-                    <md-table-row>
-                      <md-table-head>Assets</md-table-head>
-                      <md-table-head>Quantity</md-table-head>
-                    </md-table-row>
-                  </md-table-header>
-
-                  <md-table-body>
-                      <md-table-row v-for="inbox in inboxes" :key="inbox.id">
-                        <md-table-cell>{{inbox.name}}</md-table-cell>
-                        <md-table-cell md-numeric>{{inbox.coinIds.length}}</md-table-cell>
-                        <md-table-cell>
-                          <md-input-container>
-                            <md-input v-model="transferForm"></md-input>
-                          </md-input-container>
-                        </md-table-cell>
-                        <md-table-cell>
-                          <md-button @click="transferAssets(transferForm)">send</md-button>
-                        </md-table-cell>
-                      </md-table-row>
-                  </md-table-body>
-                </md-table>
-              </md-card-content>
-            </md-table-card>
-          </md-layout>
+           <portfolio />
 
           <md-layout md-align="center" md-gutter md-flex="45" class="layout">
             <md-table-card class="card">
@@ -94,11 +63,13 @@
 <script>
 import SelectWallet from './SelectWallet.vue'
 import CreateWallet from './CreateWallet.vue'
+import Portfolio from './Portfolio.vue'
 export default {
   name: 'wallet',
   components: {
     'select-wallet': SelectWallet,
-    'create-wallet': CreateWallet
+    'create-wallet': CreateWallet,
+    'portfolio': Portfolio
   },
   computed: {
     walletList () {

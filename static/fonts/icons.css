@@ -2,7 +2,7 @@
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url(Material+Icons_400_normal.eot); /* {{embedded-opentype-gf-url}} */
+    src: url(Material+Icons_400_normal.svg#Material+Icons_400_normal); /* {{embedded-opentype-gf-url}} */
     src: local('☺'),
         url(Material+Icons_400_normal.eot?#iefix) format('embedded-opentype'), /* {{embedded-opentype-gf-url}} */
         url(Material+Icons_400_normal.woff) format('woff'), /* http://fonts.gstatic.com/s/materialicons/v31/2fcrYFNaTjcS6g4U3t-Y5ewrjPiaoEww8AihgqWRJAo.woff */

@@ -163,6 +163,7 @@ export default new Vuex.Store({
       }
       console.log(`Minting ${quantity} coins for '${wallet.id}'`)
       const coinIds = await mintCoins(wallet.id, quantity)
+      console.log('IDS', coinIds)
       console.log('Notifying coins transfer to recipient\'s wallet inbox...')
       const txId = await sendTxNotif(appHandle, wallet.id, coinIds, assetInfo)
       console.log(`Asset coins minted!`, txId)
