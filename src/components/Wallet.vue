@@ -27,34 +27,8 @@
           </md-card>
         </md-layout>
         <md-layout md-align="center" md-gutter md-flex="90">
-           <portfolio />
-
-          <md-layout md-align="center" md-gutter md-flex="45" class="layout">
-            <md-table-card class="card">
-              <md-card-header>
-                <div class="md-title">Transactions</div>
-              </md-card-header>
-              <md-card-content>
-                <md-table>
-                  <md-table-header>
-                    <md-table-row>
-                      <md-table-head>Asset</md-table-head>
-                      <md-table-head md-numeric>Type</md-table-head>
-                      <md-table-head md-numeric>Quantity</md-table-head>
-                    </md-table-row>
-                  </md-table-header>
-
-                  <md-table-body>
-                      <md-table-row v-for="inbox in inboxes" :key="inbox.id">
-                        <md-table-cell>{{inbox.name}}</md-table-cell>
-                        <md-table-cell class="green">received</md-table-cell>
-                        <md-table-cell md-numeric>{{inbox.coinIds.length}}</md-table-cell>
-                      </md-table-row>
-                  </md-table-body>
-                </md-table>
-              </md-card-content>
-            </md-table-card>
-          </md-layout>
+          <portfolio />
+          <transactions />
         </md-layout>
       </md-layout>
   </div>
@@ -64,12 +38,14 @@
 import SelectWallet from './SelectWallet.vue'
 import CreateWallet from './CreateWallet.vue'
 import Portfolio from './Portfolio.vue'
+import Transactions from './Transactions.vue'
 export default {
   name: 'wallet',
   components: {
     'select-wallet': SelectWallet,
     'create-wallet': CreateWallet,
-    'portfolio': Portfolio
+    'portfolio': Portfolio,
+    'transactions': Transactions
   },
   computed: {
     walletList () {
@@ -127,9 +103,6 @@ li {
 
 a {
   color: #42b983;
-}
-.green {
-  color: green;
 }
 .wallet {
   width: 100%;
