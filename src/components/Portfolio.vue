@@ -1,19 +1,14 @@
 <template>
   <div>
     <h1>Portoflio </h1>
-    <div class="box" v-for="inbox in inboxes" :key="inbox.id">
+    <div class="box" v-for="coin in coins" :key="coin">
       <div class="item">
-        {{inbox.name}}
-      </div>
-      <div class="item">
-        {{inbox.coinIds.length}}
-      </div>
-      <div class="item">
-        {{inbox.name}}
+        {{coin}}
       </div>
       <div class="item line">
         <md-input-container>
-          <md-input v-model="transferForm"></md-input>
+          <md-input v-model="transferForm.receiver"></md-input>
+          <md-input v-model="transferForm.quantity"></md-input>
         </md-input-container>
         <md-button @click="transferAssets(transferForm)">send</md-button>
       </div>
@@ -25,8 +20,9 @@
 export default {
   name: 'portfolio',
   computed: {
-    inboxes () {
-      return this.$store.state.inboxData
+    coins () {
+      console.log('Coins', this.$store.state.coins)
+      return this.$store.state.coins
     },
     transferForm: {
       get () {
@@ -45,7 +41,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .box {
     width: 100%;
     display: flex;

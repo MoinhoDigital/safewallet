@@ -11,12 +11,6 @@
       <div class="item">
         <span :class="inbox.type">{{inbox.type}}</span>
       </div>
-      <div class="item line">
-        <md-input-container>
-          <md-input v-model="transferForm"></md-input>
-        </md-input-container>
-        <md-button @click="transferAssets(transferForm)">send</md-button>
-      </div>
     </div>
   </div>
 </template>
@@ -27,19 +21,6 @@ export default {
   computed: {
     inboxes () {
       return this.$store.state.inboxData
-    },
-    transferForm: {
-      get () {
-        return this.$store.state.transferForm
-      },
-      set (value) {
-        this.$store.commit('transferForm', value)
-      }
-    }
-  },
-  methods: {
-    transferAssets (transferForm) {
-      this.$store.dispatch('transferAssets', transferForm)
     }
   }
 }

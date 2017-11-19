@@ -11,10 +11,8 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
-    "safe-coins-wallet": "0.0.5",
     "vue": "^2.5.2",
-    "vue-fab": "^2.1.1",
-    "vue-material": "^0.7.5",
+    "vue-material": "^1.0.0-beta-4",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.0"
   },

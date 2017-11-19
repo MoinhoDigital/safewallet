@@ -22,7 +22,7 @@ export default {
   computed: {
     input: {
       get () {
-        return this.$store.state.walletInput
+        return this.$store.state.input.walletInput
       },
       set (value) {
         this.$store.commit('updateWalletInput', value)
@@ -37,7 +37,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .box {
     width: 300px;
   }

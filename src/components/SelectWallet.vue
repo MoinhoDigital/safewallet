@@ -34,12 +34,11 @@ export default {
   },
   methods: {
     selectWallet () {
-      console.log(this.select)
       this.$store.dispatch('selectWallet', this.select)
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 </style>

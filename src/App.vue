@@ -1,27 +1,18 @@
 <template>
   <div id="app">
-    <md-toolbar>
-      <md-button class="md-icon-button md-list-action">
-        <md-icon></md-icon>
-      </md-button>
-      <h2 class="md-title" style="flex: 1">Safe Wallet</h2>
-    </md-toolbar>
+    <toolBar></toolBar>
     <md-layout md-gutter>
       <router-view/>
     </md-layout>
-    <fab
-      @cache="cache"
-      @alertMe="alert"
-    ></fab>
   </div>
 </template>
 
 <script>
-import fab from 'vue-fab'
+import ToolBar from './components/ToolBar.vue'
 export default {
   name: 'app',
   components: {
-    fab
+    'toolBar': ToolBar
   },
   mounted: function () {
     this.$nextTick(async function () {
@@ -33,30 +24,6 @@ export default {
         await dispatch('getWallets')
       }
     })
-  },
-  data () {
-    return {
-      bgColor: '#778899',
-      position: 'top-right',
-      fabActions: [
-        {
-          name: 'cache',
-          icon: 'cached'
-        },
-        {
-          name: 'alertMe',
-          icon: 'add_alert'
-        }
-      ]
-    }
-  },
-  methods: {
-    cache () {
-      console.log('Cache Cleared')
-    },
-    alert () {
-      alert('Clicked on alert icon')
-    }
   }
 }
 </script>
