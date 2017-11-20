@@ -6,10 +6,10 @@
         {{coin}}
       </div>
       <div class="item line">
-        <md-input-container>
+        <md-field>
           <md-input v-model="transferForm.receiver"></md-input>
           <md-input v-model="transferForm.quantity"></md-input>
-        </md-input-container>
+        </md-field>
         <md-button @click="transferAssets(transferForm)">send</md-button>
       </div>
     </div>

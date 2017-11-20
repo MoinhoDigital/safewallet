@@ -53,6 +53,9 @@ export default new Vuex.Store({
     pk: null,
     wallet: null,
     inboxData: [],
+    modals: {
+      createWallet: false
+    },
     input: {
       walletInput: 'Satoshi Nakamoto',
       assetForm: { asset: 'BTC', quantity: 3 },
@@ -77,6 +80,10 @@ export default new Vuex.Store({
     transferForm: (state, payload) => {
       state.input.assetForm = payload
     },
+    newWalletModal: (state, payload) => {
+      console.log('modal', state)
+      state.modals.createWallet = !state.modals.createWallet
+    },
     setWalletList: (state, payload) => {
       let walletList = []
       payload.map((item) => {
@@ -84,6 +91,8 @@ export default new Vuex.Store({
         parsed.id = Object.keys(item)[0]
         walletList.push(parsed)
       })
+      console.log('walletList', walletList)
+      // const sortedList = walletList.sort((a, b) => walletList.lastUpdate[a] - walletList.lastUpdate[b])
       state.walletList = walletList
     },
     setWallet: (state, payload) => {
@@ -143,11 +152,14 @@ export default new Vuex.Store({
         }
         commit('coins', coinIds)
         commit('inboxData', inboxData)
-        commit('setWallet', state.walletList[index])
+        commit('setWallet', { ...state.walletList[index], index })
         console.log(state)
       } catch (err) {
         console.log('Error selecting wallet', err)
       }
+    },
+    async newWallet ({ commit, state }) {
+      commit('newWalletModal')
     },
     async createWallet ({ commit, state }, input) {
       try {

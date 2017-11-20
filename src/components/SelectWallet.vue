@@ -1,24 +1,13 @@
 <template>
-  <md-card class="box">
-    <md-card-header>
-      <div class="md-title">Existing Wallets</div>
-    </md-card-header>
-    <md-card-content>
-      <md-input-container>
-        <label for="wallets">Wallets</label>
-        <md-select v-model="select" name="wallets">
-          <md-option v-for="(wallet, index) in wallets"
-            :key="index"
-            :value="index">
-            {{wallet.id}}
-          </md-option>
-        </md-select>
-      </md-input-container>
-    </md-card-content>
-    <md-card-actions>
-      <md-button @click="selectWallet(select)">Enter</md-button>
-    </md-card-actions>
-  </md-card>
+  <md-field>
+    <md-select v-model="input" name="wallets" placeholder="Wallets">
+      <md-option v-for="(wallet, index) in wallets"
+        :key="index"
+        :value="index">
+        {{wallet.id}}
+      </md-option>
+    </md-select>
+  </md-field>
 </template>
 
 <script>
@@ -30,6 +19,14 @@ export default {
   computed: {
     wallets () {
       return this.$store.state.walletList
+    },
+    input: {
+      get () {
+        return this.$store.state.walletList
+      },
+      set (value) {
+        this.$store.dispatch('selectWallet', value)
+      }
     }
   },
   methods: {
